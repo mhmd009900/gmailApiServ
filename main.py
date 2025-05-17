@@ -14,7 +14,9 @@ app.include_router(client.router, prefix="/api", tags=["Client"])
 def startup_event():
     init_db()
     schedule_token_cleanup()
+    print("Server is running...")  # طباعة عند بدء التشغيل
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # تستخدم بورت متغير البيئة الذي يوفره Railway
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting server on port {port}...")  # طباعة قبل التشغيل
     uvicorn.run("main:app", host="0.0.0.0", port=port)
