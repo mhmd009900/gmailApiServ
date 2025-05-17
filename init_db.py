@@ -1,6 +1,6 @@
 from database import Base, engine, SessionLocal
 from models import Admin, GmailAccount
-from utils.auth import hash_password
+from auth import hash_password
 
 def init_db():
     # 1. إنشاء الجداول إن لم تكن موجودة
