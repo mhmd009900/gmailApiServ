@@ -5,7 +5,6 @@ import os
 
 DATABASE_URL = "postgresql://postgres:fLQsnIlPxaSPGeLlShqaVWnZVRVZCcUu@tramway.proxy.rlwy.net:55093/railway"
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
