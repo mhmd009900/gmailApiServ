@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+
+sqlalchemy
+psycopg2-binary
+
+python-multipart
+pydantic
+passlib[bcrypt]
+
+google-api-python-client
+google-auth
+google-auth-oauthlib
+
+python-dotenv
