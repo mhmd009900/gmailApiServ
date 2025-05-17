@@ -1,21 +1,9 @@
-import os
 from fastapi import FastAPI
-import admin, client
-from token_manager import schedule_token_cleanup
-from database import init_db
+from .database import Base, engine
+from .accounts import router as accounts_router
 
 app = FastAPI()
 
-app.include_router(admin.router, prefix="/admin", tags=["Admin"])
-app.include_router(client.router, prefix="/api", tags=["Client"])
+Base.metadata.create_all(bind=engine)
 
-@app.on_event("startup")
-def startup_event():
-    print("Server is running...")
-    init_db()
-    schedule_token_cleanup()
-
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8080))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+app.include_router(accounts_router, prefix="/api")
