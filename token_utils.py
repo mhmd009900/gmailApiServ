@@ -1,4 +1,4 @@
-import uuid
+import secrets
 
 def generate_token() -> str:
-    return str(uuid.uuid4())
+return secrets.token_urlsafe(32)
