@@ -1,7 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
-from .database import SessionLocal
-from .models import Account
+from database import SessionLocal
+from models import Account
 
 scheduler = BackgroundScheduler()
 scheduler.start()
