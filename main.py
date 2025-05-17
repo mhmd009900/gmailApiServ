@@ -15,7 +15,7 @@ def startup_event():
   init_db()
   schedule_token_cleanup()
 
-if name == "main":
+if __name__ == "main":
   port = int(os.environ.get("PORT", 8000))
   uvicorn.run("main:app", host="0.0.0.0", port=port)
 
