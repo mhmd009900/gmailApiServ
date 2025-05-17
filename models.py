@@ -1,28 +1,22 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, JSON
-from sqlalchemy.orm import relationship
-from database import Base
-from datetime import datetime
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+import datetime
 
-class Admin(Base):
-    __tablename__ = "admins"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    password_hash = Column(String)
+Base = declarative_base()
 
-class GmailAccount(Base):
-    __tablename__ = "gmail_accounts"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    credentials_json = Column(String)  # سيتم تخزين محتوى JSON كنص
-    token_json = Column(String)        # سيتم تخزين محتوى JSON كنص
+class AdminUser(Base):
+    __tablename__ = "admin_users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
 
-class ApiToken(Base):
+class APIToken(Base):
     __tablename__ = "api_tokens"
-    id = Column(Integer, primary_key=True, index=True)
-    client_email = Column(String, index=True)  # إيميل العميل الذي يملك التوكن
-    token = Column(String, unique=True, index=True)
-    permissions = Column(JSON)  # {"facebook": True, "registration": True}
-    gmail_account_ids = Column(JSON)  # قائمة أرقام GmailAccount IDs المستخدمة
-    status = Column(String, default="active")  # active, disabled
-    created_at = Column(DateTime, default=datetime.utcnow)
-    disabled_at = Column(DateTime, nullable=True)
+    id = Column(Integer, primary_key=True)
+    token = Column(String, unique=True, nullable=False)
+    client_email = Column(String, nullable=False)
+    permission_type = Column(String, nullable=False)  # e.g., facebook, registration
+    gmail_account = Column(String, nullable=False)  # Gmail associated
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    disable_after = Column(DateTime, nullable=True)
