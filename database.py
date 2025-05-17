@@ -1,18 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
 
-# تأكد من أن هذا المتغير موجود في البيئة
-DATABASE_URL = os.getenv("DATABASE_URL")
+# ✅ رابط الاتصال الكامل (تم تضمينه مباشرة)
+DATABASE_URL = "postgresql+psycopg2://postgres:fLQsnIlPxaSPGeLlShqaVWnZVRVZCcUu@tramway.proxy.rlwy.net:55093/railway"
 
-# التحقق من وجود المتغير فعليًا لتفادي الخطأ
-if not DATABASE_URL:
-    raise Exception("DATABASE_URL not set in environment variables")
-
-# إعداد الاتصال
+# ✅ إنشاء محرك الاتصال
 engine = create_engine(DATABASE_URL)
 
+# ✅ إعداد الجلسة
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# ✅ الأساس لبناء الجداول
 Base = declarative_base()
