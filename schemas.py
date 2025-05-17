@@ -1,20 +1,9 @@
 from pydantic import BaseModel
-from typing import List, Optional
-from datetime import datetime
+from typing import Optional
 
-class TokenCreateRequest(BaseModel):
-    client_email: str
-    number_of_tokens: int
-    permissions: dict  # مثال {"facebook": True, "registration": True}
+class AccountAssignResponse(BaseModel):
+    account_id: int
+    token_path: str
 
-class TokenResponse(BaseModel):
-    token: str
-    status: str
-    created_at: datetime
-    disabled_at: Optional[datetime]
-
-class ApiTokenOut(BaseModel):
-    client_email: str
-    token: str
-    permissions: dict
-    status: str
+class RegistrationDetected(BaseModel):
+    account_id: int
