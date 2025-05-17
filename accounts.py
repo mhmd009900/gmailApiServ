@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from .auth import get_current_client, get_db
-from .models import Account, Session as UserSession
-from .schemas import AccountAssignResponse, RegistrationDetected
-from .tasks import schedule_deactivation
+from auth import get_current_client, get_db
+from models import Account, Session as UserSession
+from schemas import AccountAssignResponse, RegistrationDetected
+from tasks import schedule_deactivation
 from datetime import datetime
 
 router = APIRouter()
