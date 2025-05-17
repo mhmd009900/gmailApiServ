@@ -1,17 +1,76 @@
-import os, json
+import os
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from typing import Optional, List
 
-def get_credentials_for(gmail_account: str):
-    creds_json = os.getenv(f"CREDENTIALS_{gmail_account}")
-    token_json = os.getenv(f"TOKEN_{gmail_account}")
-    if not creds_json or not token_json:
-        raise ValueError("Missing credentials or token for " + gmail_account)
-    creds = Credentials.from_authorized_user_info(json.loads(token_json))
-    return creds
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-def read_gmail_for_registration(gmail_account: str) -> bool:
-    creds = get_credentials_for(gmail_account)
-    service = build("gmail", "v1", credentials=creds)
-    results = service.users().messages().list(userId="me", q="subject:registration", maxResults=1).execute()
-    return bool(results.get("messages", []))
+def gmail_login_and_fetch(
+    token_path: str,
+    credentials_path: str,
+    user_id: str = 'me',
+    max_results: int = 20,
+    filter_senders: Optional[List[str]] = None,
+    confirmation_only: Optional[bool] = True
+):
+    """
+    يجلب رسائل Gmail مع دعم الفلاتر:
+    - filter_senders: كلمات يجب أن تكون في عنوان المرسل (From)
+    - confirmation_only: فلترة الرسائل التي تحتوي على "confirmation code"
+    """
+    creds = None
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(token_path, 'w') as token:
+            token.write(creds.to_json())
+
+    service = build('gmail', 'v1', credentials=creds)
+    results = service.users().messages().list(userId=user_id, maxResults=max_results).execute()
+    messages = results.get('messages', [])
+
+    fetched = []
+    for msg in messages:
+        m = service.users().messages().get(
+            userId=user_id,
+            id=msg['id'],
+            format='metadata',
+            metadataHeaders=['Subject', 'From', 'Date']
+        ).execute()
+
+        headers = m.get('payload', {}).get('headers', [])
+        hdrs = {h['name']: h['value'] for h in headers}
+        subject = hdrs.get('Subject', '')
+        sender = hdrs.get('From', '')
+        snippet = m.get('snippet', '')
+
+        # إذا كان مطلوبًا التأكد من وجود "confirmation code"
+        if confirmation_only:
+            if "confirmation code" not in (subject + snippet).lower():
+                continue
+
+        # إذا تم تحديد فلترة للمرسلين
+        if filter_senders:
+            found = False
+            for keyword in filter_senders:
+                if keyword.lower() in sender.lower() and "registration" in sender.lower():
+                    found = True
+                    break
+            if not found:
+                continue
+
+        fetched.append({
+            'id': msg['id'],
+            'threadId': m.get('threadId'),
+            'snippet': snippet,
+            'headers': headers
+        })
+
+    return fetched
