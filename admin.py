@@ -18,6 +18,10 @@ def create_admin(email: str, password: str, db: Session = Depends(get_db)):
     db.add(admin)
     db.commit()
     return {"message": "Admin created"}
+@router.get("/list-admins")
+def list_admins(db: Session = Depends(get_db)):
+    admins = db.query(AdminUser).all()
+    return [{"email": admin.email, "id": admin.id} for admin in admins]
 
 @router.post("/generate_tokens")
 def generate_tokens(admin_email: str, admin_password: str, client_email: str, count: int, permission_type: str, db: Session = Depends(get_db)):
