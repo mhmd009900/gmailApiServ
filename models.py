@@ -5,13 +5,13 @@ from datetime import datetime
 Base = declarative_base()
 
 class AdminUser(Base):
-    __tablename__ = "admin_users"
+    tablename = "admin_users"
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
 class APIToken(Base):
-    __tablename__ = "api_tokens"
+    tablename = "api_tokens"
     id = Column(Integer, primary_key=True, index=True)
     token = Column(String, unique=True, index=True)
     client_email = Column(String)
