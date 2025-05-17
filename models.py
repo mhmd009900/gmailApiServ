@@ -3,13 +3,13 @@ from database import Base
 from datetime import datetime, timedelta
 
 class AdminUser(Base):
-  tablename = "admin_users"
+   __tablename__ = "admin_users"
   id = Column(Integer, primary_key=True, index=True)
   email = Column(String, unique=True, index=True)
   hashed_password = Column(String)
 
 class APIToken(Base):
-  tablename = "api_tokens"
+   __tablename__ = "api_tokens"
   id = Column(Integer, primary_key=True, index=True)
   token = Column(String, unique=True, index=True)
   client_email = Column(String, index=True)
