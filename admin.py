@@ -8,6 +8,13 @@ from datetime import datetime
 import os
 
 router = APIRouter()
+@router.post("/login")
+def login_admin(email: str, password: str, db: Session = Depends(get_db)):
+    admin = db.query(AdminUser).filter_by(email=email).first()
+    if not admin or not verify_password(password, admin.hashed_password):
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+    
+    return {"message": "Login successful"}
 
 @router.post("/create_admin")
 def create_admin(email: str, password: str, db: Session = Depends(get_db)):
