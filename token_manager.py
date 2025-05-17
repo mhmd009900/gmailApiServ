@@ -1,23 +1,19 @@
-import threading, time
-from sqlalchemy.orm import Session
+from datetime import datetime
 from database import SessionLocal
 from models import APIToken
-from datetime import datetime
+import threading
+import time
 
-def mark_expired_tokens():
-    db: Session = SessionLocal()
-    try:
-        now = datetime.utcnow()
-        expired = db.query(APIToken).filter(APIToken.expires_at <= now, APIToken.used == False).all()
-        for token in expired:
-            token.used = True
-        db.commit()
-    finally:
-        db.close()
+def cleanup_expired_tokens():
+while True:
+db = SessionLocal()
+expired = db.query(APIToken).filter(APIToken.expires_at <= datetime.utcnow(), APIToken.used == False).all()
+for token in expired:
+db.delete(token)
+db.commit()
+db.close()
+time.sleep(3600) # every hour
 
 def schedule_token_cleanup():
-    def run():
-        while True:
-            mark_expired_tokens()
-            time.sleep(60)
-    threading.Thread(target=run, daemon=True).start()
+thread = threading.Thread(target=cleanup_expired_tokens, daemon=True)
+thread.start()
