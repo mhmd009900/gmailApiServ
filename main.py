@@ -1,8 +1,8 @@
+import os
 from fastapi import FastAPI
 import admin, client
 from token_manager import schedule_token_cleanup
 from database import init_db
-import uvicorn, os
 
 app = FastAPI()
 
@@ -11,11 +11,11 @@ app.include_router(client.router, prefix="/api", tags=["Client"])
 
 @app.on_event("startup")
 def startup_event():
-  print("Server is running...")
-  init_db()
-  schedule_token_cleanup()
+    print("Server is running...")
+    init_db()
+    schedule_token_cleanup()
 
-if __name__ == "main":
-  port = int(os.environ.get("PORT", 8000))
-  uvicorn.run("main:app", host="0.0.0.0", port=port)
-
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
