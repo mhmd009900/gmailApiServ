@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-import admin, client
+import admin
+import client
 from token_manager import schedule_token_cleanup
 from database import init_db
 
