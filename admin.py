@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from models import AdminUser, APIToken
-from utils.auth import hash_password, verify_password
-from utils.token_utils import generate_token
+from auth import hash_password, verify_password
+from token_utils import generate_token
 import os
 from datetime import datetime, timedelta
 
