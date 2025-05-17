@@ -1,18 +1,22 @@
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from models import Base
 import os
 
 DATABASE_URL = "postgresql://postgres:fLQsnIlPxaSPGeLlShqaVWnZVRVZCcUu@tramway.proxy.rlwy.net:55093/railway"
+
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
+from models import AdminUser, APIToken
+Base.metadata.create_all(bind=engine)
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+db = SessionLocal()
+try:
+yield db
+finally:
+db.close()
